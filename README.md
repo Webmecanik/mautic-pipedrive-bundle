@@ -4,6 +4,16 @@ It use [OAuth 2.0](https://oauth.net/2/) authorization.
 
 Pipedrive integration sync persons and companies.
 
+## Installation
+
+By composer
+
+`composer require webmecanik/mautic-pipedrive-bundle`
+
+Manually from GitHub
+
+https://github.com/webmecanik/mautic-pipedrive-bundle
+
 ## Setup
 
 1. Create unlisted app in Tools and Apps > Marketplace manager
