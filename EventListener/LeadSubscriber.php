@@ -39,7 +39,7 @@ class LeadSubscriber implements EventSubscriberInterface
             LeadEvents::LEAD_POST_MERGE     => ['onLeadMerge', 0],
         ];
 
-        if (defined(LeadEvents::COMPANY_POST_MERGE)) {
+        if (defined('LeadEvents::COMPANY_POST_MERGE')) {
             $events[LeadEvents::COMPANY_POST_MERGE] = ['onCompanyMerge', 0];
         }
 
