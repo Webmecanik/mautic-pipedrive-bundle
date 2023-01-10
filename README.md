@@ -100,3 +100,6 @@ First time sync for data from last year
 
 `php bin/console mautic:integrations:sync Pipedrive2 -f --start-datetime="-1 year"`
 
+## Requirements
+
+- The Company merge https://github.com/mautic/mautic/pull/11748
