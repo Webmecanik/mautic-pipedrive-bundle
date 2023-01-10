@@ -110,6 +110,14 @@ return [
                     'monolog.logger.mautic',
                 ],
             ],
+            'pipedrive2.integrations.sync.company.relation.integration' => [
+                'class'     => \MauticPlugin\PipedriveBundle\Integration\Sync\CompanyRelation\CompanyRelationSyncToIntegration::class,
+                'arguments' => [
+                    'mautic.lead.model.company',
+                    'mautic.integrations.sync.service',
+                    'mautic.integrations.repository.object_mapping',
+                ],
+            ],
         ],
         'sync'         => [
             // Returns available fields from the integration either from cache or "live" via API
@@ -151,7 +159,7 @@ return [
                 'class'     => \MauticPlugin\PipedriveBundle\Sync\DataExchange\OrderExecutioner::class,
                 'arguments' => [
                     'pipedrive2.connection.client',
-                    'mautic.integrations.sync.company.relation.integration',
+                    'pipedrive2.integrations.sync.company.relation.integration',
                     'monolog.logger.mautic',
                     'pipedrive2.sync.repository.fields',
                     'pipedrive2.config',
