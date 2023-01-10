@@ -215,7 +215,6 @@ class OrderExecutioner
             );
             }
         }
-        exit(print_r($datum));
 
         return $datum;
     }
