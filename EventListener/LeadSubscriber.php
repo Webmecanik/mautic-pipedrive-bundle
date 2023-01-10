@@ -33,12 +33,17 @@ class LeadSubscriber implements EventSubscriberInterface
 
     public static function getSubscribedEvents()
     {
-        return [
-            LeadEvents::LEAD_POST_DELETE       => ['onLeadPostDelete', 256],
-            LeadEvents::COMPANY_POST_DELETE    => ['onCompanyPostDelete', 256],
-            LeadEvents::LEAD_POST_MERGE        => ['onLeadMerge', 0],
-            LeadEvents::COMPANY_POST_MERGE     => ['onCompanyMerge', 0],
+        $events = [
+            LeadEvents::LEAD_POST_DELETE    => ['onLeadPostDelete', 256],
+            LeadEvents::COMPANY_POST_DELETE => ['onCompanyPostDelete', 256],
+            LeadEvents::LEAD_POST_MERGE     => ['onLeadMerge', 0],
         ];
+
+        if (defined(LeadEvents::COMPANY_POST_MERGE)) {
+            $events[LeadEvents::COMPANY_POST_MERGE] = ['onCompanyMerge', 0];
+        }
+
+        return $events;
     }
 
     public function onLeadMerge(LeadMergeEvent $event)
