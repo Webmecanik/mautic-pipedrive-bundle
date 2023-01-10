@@ -49,9 +49,11 @@ https://github.com/webmecanik/mautic-pipedrive-bundle
 ![image](https://user-images.githubusercontent.com/462477/198949919-e92cd7a9-f618-4f61-b836-220a7a2a0f8e.png)
 
 5. Copy Client ID and Client Secret from Pipedrive
+
 ![image](https://user-images.githubusercontent.com/14075239/211548366-20515a2f-db05-42b5-8881-0b34af38877b.png)
 
 6. Go to Pipedrive 2 plugin in Mautic. Paste the Client ID and Client Secret from Pipedrive and set the subdomain of your Pipedrive account.
+
 ![image](https://user-images.githubusercontent.com/14075239/211548449-77cbfe3f-5a4c-4644-91de-17cff4204e78.png)
 
 7. Save your plugin configuration and click Authorize App.
