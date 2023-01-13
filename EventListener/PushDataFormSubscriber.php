@@ -17,6 +17,7 @@ use MauticPlugin\PipedriveBundle\Form\Type\PushContactActionType;
 use MauticPlugin\PipedriveBundle\Integration\Config;
 use MauticPlugin\PipedriveBundle\Integration\Pipedrive2Integration;
 use MauticPlugin\PipedriveBundle\PipedriveEvents;
+use MauticPlugin\PipedriveBundle\Sync\DataExchange\OrderExecutioner;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 class PushDataFormSubscriber implements EventSubscriberInterface
@@ -43,8 +44,8 @@ class PushDataFormSubscriber implements EventSubscriberInterface
     public static function getSubscribedEvents()
     {
         return [
-            FormEvents::FORM_ON_BUILD                          => ['configureAction', 0],
-            PipedriveEvents::ON_FORM_ACTION_PUSH_CONTACT       => ['pushContacts', 0],
+            FormEvents::FORM_ON_BUILD                    => ['configureAction', 0],
+            PipedriveEvents::ON_FORM_ACTION_PUSH_CONTACT => ['pushContacts', 0],
         ];
     }
 
@@ -77,6 +78,7 @@ class PushDataFormSubscriber implements EventSubscriberInterface
                     'integration'      => Pipedrive2Integration::NAME,
                     'disable-pull'     => true,
                     'mautic-object-id' => $mauticObjectIds,
+                    'options'          => [OrderExecutioner::FORCE_SYNC => true],
                 ]
             );
             $this->syncService->processIntegrationSync($inputOptions);

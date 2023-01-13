@@ -16,6 +16,7 @@ use MauticPlugin\PipedriveBundle\Form\Type\PushContactActionType;
 use MauticPlugin\PipedriveBundle\Integration\Config;
 use MauticPlugin\PipedriveBundle\Integration\Pipedrive2Integration;
 use MauticPlugin\PipedriveBundle\PipedriveEvents;
+use MauticPlugin\PipedriveBundle\Sync\DataExchange\OrderExecutioner;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 class PushDataCampaignSubscriber implements EventSubscriberInterface
@@ -84,6 +85,7 @@ class PushDataCampaignSubscriber implements EventSubscriberInterface
                     'integration'      => Pipedrive2Integration::NAME,
                     'disable-pull'     => true,
                     'mautic-object-id' => $mauticObjectIds,
+                    'options'          => [OrderExecutioner::FORCE_SYNC => true],
                 ]
             );
 
