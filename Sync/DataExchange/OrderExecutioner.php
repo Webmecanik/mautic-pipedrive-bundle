@@ -250,6 +250,13 @@ class OrderExecutioner
                     return false;
                 }
             }
+
+            if (MappingManualFactory::CONTACT_OBJECT === $objectName) {
+                $requiredToCheck = ['first_name', 'last_name'];
+                if (!count(array_intersect($requiredToCheck, $data))) {
+                    return false;
+                }
+            }
         }
 
         return true;

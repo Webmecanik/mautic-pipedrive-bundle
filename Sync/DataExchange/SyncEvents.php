@@ -143,6 +143,10 @@ class SyncEvents
                 }
             }
 
+            if (empty($activity)) {
+                continue;
+            }
+
             $contactActivity[$integrationId] = $activity;
 
             unset($activity);
