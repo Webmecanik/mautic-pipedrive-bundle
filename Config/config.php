@@ -111,7 +111,7 @@ return [
                 ],
             ],
             'pipedrive2.integrations.sync.company.relation.integration' => [
-                'class'     => \MauticPlugin\PipedriveBundle\Integration\Sync\CompanyRelation\CompanyRelationSyncToIntegration::class,
+                'class'     => \MauticPlugin\PipedriveBundle\Sync\Sync\CompanyRelation\CompanyRelationSyncToIntegration::class,
                 'arguments' => [
                     'mautic.lead.model.company',
                     'mautic.integrations.sync.service',

@@ -14,9 +14,9 @@ use MauticPlugin\PipedriveBundle\Connection\DTO\Response;
 use MauticPlugin\PipedriveBundle\Connection\Owners;
 use MauticPlugin\PipedriveBundle\Integration\Config;
 use MauticPlugin\PipedriveBundle\Integration\Pipedrive2Integration;
-use MauticPlugin\PipedriveBundle\Integration\Sync\CompanyRelation\CompanyRelationSyncToIntegration;
 use MauticPlugin\PipedriveBundle\Sync\Mapping\Field\FieldRepository;
 use MauticPlugin\PipedriveBundle\Sync\Mapping\Manual\MappingManualFactory;
+use MauticPlugin\PipedriveBundle\Sync\Sync\CompanyRelation\CompanyRelationSyncToIntegration;
 use Monolog\Logger;
 use Psr\Log\LogLevel;
 
@@ -38,7 +38,7 @@ class OrderExecutioner
 
     private ?OrderDAO $order = null;
 
-    private \MauticPlugin\PipedriveBundle\Integration\Sync\CompanyRelation\CompanyRelationSyncToIntegration $relationSyncToIntegration;
+    private \MauticPlugin\PipedriveBundle\Sync\Sync\CompanyRelation\CompanyRelationSyncToIntegration $relationSyncToIntegration;
 
     public function __construct(Client $client, CompanyRelationSyncToIntegration $relationSyncToIntegration, Logger $logger, FieldRepository $fieldRepository, Config $config, Owners $owners)
     {
