@@ -252,7 +252,7 @@ class OrderExecutioner
             }
 
             if (MappingManualFactory::CONTACT_OBJECT === $objectName) {
-                if (!array_key_exists('first_name', $data) && !array_key_exists('last_name', $data)) {
+                if (empty($data['first_name']) && empty($data['last_name'])) {
                     return false;
                 }
             }
