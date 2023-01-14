@@ -252,8 +252,7 @@ class OrderExecutioner
             }
 
             if (MappingManualFactory::CONTACT_OBJECT === $objectName) {
-                $requiredToCheck = ['first_name', 'last_name'];
-                if (!count(array_intersect($requiredToCheck, $data))) {
+                if (!array_key_exists('first_name', $data) && !array_key_exists('last_name', $data)) {
                     return false;
                 }
             }
