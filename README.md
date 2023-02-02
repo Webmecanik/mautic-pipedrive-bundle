@@ -34,7 +34,7 @@ https://github.com/webmecanik/mautic-pipedrive-bundle
 ## Authentication
 
 1. Ask Pipedrive support (marketplace.devs@pipedrive.com) to enable Marketplace Manager on your account. [More info here](https://pipedrive.readme.io/docs/marketplace-manager).
-2. Create unlisted app in Tools and Apps > Marketplace manager > Call it "Webmecanik Automation for {company}". Replace {company} by your company name
+2. Create unlisted app in Tools and Apps > Marketplace manager > Call it "Mautic for {company}". Replace {company} by your company name
 
 ![image](https://user-images.githubusercontent.com/462477/197609058-90473cf4-fd90-4538-ab34-a42c4079a9a3.png)
 
