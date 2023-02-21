@@ -96,6 +96,7 @@ You can send Mautic contact activities in Pipedrive contact history. Then your s
 
 # Requirements
 This plugin needs the Company merge event merged in Mautic 5. You can cherrypick it from: https://github.com/mautic/mautic/pull/11748
+Also need PR Disable activity push from Mautic repository https://github.com/mautic/mautic/pull/11255
 
 # Troubleshooting
 ## First sync. can be taking all time contacts & companies?
