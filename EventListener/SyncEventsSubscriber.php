@@ -38,12 +38,17 @@ class SyncEventsSubscriber implements EventSubscriberInterface
             return;
         }
 
-        $inputOptionsDAO = $syncEvent->getInputOptionsDAO();
-        $startDateTime   = $inputOptionsDAO->getStartDateTime();
+        $inputOptionsDAO = $syncEvent->getInputOptions();
+
+        if (!$inputOptionsDAO->activityPushIsEnabled()) {
+            return;
+        }
 
         if (!$inputOptionsDAO->pushIsEnabled()) {
             return;
         }
+
+        $startDateTime   = $inputOptionsDAO->getStartDateTime();
 
         // sync just full for first time or by date range
         if (!$startDateTime && !$inputOptionsDAO->isFirstTimeSync()) {

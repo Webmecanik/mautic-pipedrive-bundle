@@ -53,7 +53,7 @@ class DeleteObjectSubscriber implements EventSubscriberInterface
         }
 
         // If not sync for date range, skip
-        if (!$syncEvent->getFromDateTime() || $syncEvent->getInputOptionsDAO()->isFirstTimeSync()) {
+        if (!$syncEvent->getFromDateTime() || $syncEvent->getInputOptions()->isFirstTimeSync()) {
             return;
         }
         foreach ([MappingManualFactory::CONTACT_OBJECT, MappingManualFactory::COMPANY_OBJECT] as $objectName) {
