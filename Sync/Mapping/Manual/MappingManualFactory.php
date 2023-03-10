@@ -41,8 +41,8 @@ class MappingManualFactory
         $this->manual = new MappingManualDAO(Pipedrive2Integration::NAME);
 
         // In this case, two objects are supported. Citizen to Mautic Contact and World to Mautic Company.
-        $this->configureObjectMapping(self::CONTACT_OBJECT);
         $this->configureObjectMapping(self::COMPANY_OBJECT);
+        $this->configureObjectMapping(self::CONTACT_OBJECT);
 
         return $this->manual;
     }
