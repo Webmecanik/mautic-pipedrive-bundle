@@ -118,6 +118,10 @@ Be sure to have the owner existing as users in both application with same email 
 Once you delete your contact or company in Mautic, it can take several minutes to be applied in Pipedrive, it is not instant deletion.
 Same for deletion in Pipedrive, this could take few minutes.
 
+## Mapping firstname and lastname
+Following https://github.com/Webmecanik/mautic-pipedrive-bundle/issues/6, by default Pipedrive propose a Name field not distinguishing firstname and lastname. In consequence those fields are not available to mapping.
+Ask your Pipedrive support to enable usage of this 2 separated fields first, and then you will find them in Mautic mapping. (confirmed on Pipedrive community forum https://community.pipedrive.com/discussion/comment/19741/#Comment_19741).
+
 ## Event type name
 * campaign.event
 * segment_membership
