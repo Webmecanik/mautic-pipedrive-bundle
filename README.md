@@ -1,5 +1,7 @@
 # Mautic 5 Pipedrive Integration
 
+> Looking for Mautic 4 version? Check out the [mautic4 branch](https://github.com/Webmecanik/mautic-pipedrive-bundle/tree/mautic4)
+
 Pipedrive integration based on new [Mautic integration framework](https://github.com/mautic/plugin-helloworld).
 Once installed, you can find it in Plugins configuration under, named as Pipedrive 2.
 It use [OAuth 2.0](https://oauth.net/2/) authorization.
