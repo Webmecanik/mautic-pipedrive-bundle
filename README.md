@@ -78,8 +78,6 @@ If you want to have a full synchronisation (automated), you will need to enable 
 
 ### Sync Behavior Notes
 - Push/Pull operations can be individually disabled in the configuration
-- The integration now has improved error handling during sync operations
-- Activity syncing includes detailed console output when running via command line
 - Improved handling of multi-select fields and label synchronization
 - Owner synchronization is now optional and can be enabled/disabled in settings
 
@@ -98,8 +96,8 @@ Map you contact ans company fields according to your data exchange expectations.
 
 ### Delete contacts reciprocity
 By enabling this feature, deletion of contacts will be synchronized between systems. The synchronization happens through:
-- Webhook notifications (immediate)
-- Regular sync operations (periodic)
+- Webhook (immediate) from Pipedrive
+- Command sync delete from Mautic
 
 **⚠️ Be extremely careful using this feature as deletions are permanent.**
 
