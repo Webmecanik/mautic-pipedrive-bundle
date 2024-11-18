@@ -59,10 +59,29 @@ https://github.com/webmecanik/mautic-pipedrive-bundle
 7. Save your plugin configuration and click Authorize App.
 
 ## Features settings
+
+### Webhooks
+The integration now supports webhooks from Pipedrive. To configure webhooks:
+
+1. In your Mautic Pipedrive 2 plugin settings, set up webhook authentication:
+   - Configure a Webhook username 
+   - Configure a Webhook password
+   
+2. These credentials will be used to authenticate webhook calls from Pipedrive to Mautic.
+
+The webhook endpoint will be available at: `/pipedrive2/webhook`
+
 ### Features tab
 Check your wished features.
 
 If you want to have a full synchronisation (automated), you will need to enable special command in your CRONjob (see hereunder).
+
+### Sync Behavior Notes
+- Push/Pull operations can be individually disabled in the configuration
+- The integration now has improved error handling during sync operations
+- Activity syncing includes detailed console output when running via command line
+- Improved handling of multi-select fields and label synchronization
+- Owner synchronization is now optional and can be enabled/disabled in settings
 
 #### Commands
 
@@ -78,9 +97,11 @@ First time sync for data from last year
 Map you contact ans company fields according to your data exchange expectations. Be sure to respect field format and field constraint values.
 
 ### Delete contacts reciprocity
-By enabling this feature, anytime you delete a contact in Mautic or in Pipedrive, the deletion will be applied in the other application.
+By enabling this feature, deletion of contacts will be synchronized between systems. The synchronization happens through:
+- Webhook notifications (immediate)
+- Regular sync operations (periodic)
 
-**⚠️ Be extremely careful using this feature.**
+**⚠️ Be extremely careful using this feature as deletions are permanent.**
 
 ### Sync. owners
 You can enable the synchronisation of contacts and companies owners.
