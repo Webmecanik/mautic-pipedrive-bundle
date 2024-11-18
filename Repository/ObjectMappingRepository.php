@@ -11,11 +11,8 @@ use MauticPlugin\PipedriveBundle\Sync\Mapping\Manual\MappingManualFactory;
 
 class ObjectMappingRepository
 {
-    private EntityManager $entityManager;
-
-    public function __construct(EntityManager $entityManager)
+    public function __construct(private EntityManager $entityManager)
     {
-        $this->entityManager = $entityManager;
     }
 
     public function getIntegrationIdsToDelete(string $objectName): array
@@ -94,6 +91,6 @@ class ObjectMappingRepository
             ->setParameter('integration', Pipedrive2Integration::NAME)
             ->setParameter('integrationObjectName', MappingManualFactory::CONTACT_OBJECT);
 
-        return $qb->execute()->fetchAllAssociative();
+        return $qb->executeQuery()->fetchAllAssociative();
     }
 }

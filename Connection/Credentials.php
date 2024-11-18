@@ -15,26 +15,8 @@ class Credentials implements CredentialsInterface, CodeInterface, StateInterface
 {
     private string $authorizationUrl;
 
-    private string $tokenUrl;
-
-    private string $redirectUri;
-
-    private ?string $clientId;
-
-    private ?string $clientSecret;
-
-    private ?string $code;
-
-    private ?string $state;
-
-    public function __construct(string $tokenUrl, string $redirectUri, string $clientId, string $clientSecret, ?string $code, ?string $state)
+    public function __construct(private string $tokenUrl, private string $redirectUri, private ?string $clientId, private ?string $clientSecret, private ?string $code, private ?string $state)
     {
-        $this->tokenUrl         = $tokenUrl;
-        $this->redirectUri      = $redirectUri;
-        $this->clientId         = $clientId;
-        $this->clientSecret     = $clientSecret;
-        $this->code             = $code;
-        $this->state            = $state;
         $this->authorizationUrl = $this->getAuthorizeUrl();
     }
 

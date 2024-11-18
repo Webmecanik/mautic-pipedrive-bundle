@@ -14,13 +14,10 @@ use Mautic\PluginBundle\Entity\Integration;
 
 class Config implements ConfigTokenPersistenceInterface, ConfigTokenFactoryInterface
 {
-    private \Mautic\IntegrationsBundle\Auth\Support\Oauth2\Token\TokenPersistenceFactory $tokenPersistenceFactory;
+    private ?Integration $integrationConfiguration = null;
 
-    private ?\Mautic\PluginBundle\Entity\Integration $integrationConfiguration = null;
-
-    public function __construct(TokenPersistenceFactory $tokenPersistenceFactory)
+    public function __construct(private TokenPersistenceFactory $tokenPersistenceFactory)
     {
-        $this->tokenPersistenceFactory  = $tokenPersistenceFactory;
     }
 
     public function getTokenPersistence(): TokenPersistenceInterface

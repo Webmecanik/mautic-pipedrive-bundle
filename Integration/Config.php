@@ -15,11 +15,6 @@ use MauticPlugin\PipedriveBundle\Integration\Support\ConfigSupport;
 class Config
 {
     /**
-     * @var IntegrationsHelper
-     */
-    protected $integrationsHelper;
-
-    /**
      * @var array[]
      */
     protected $fieldDirections = [];
@@ -29,9 +24,8 @@ class Config
      */
     protected $mappedFields = [];
 
-    public function __construct(IntegrationsHelper $integrationsHelper)
+    public function __construct(protected IntegrationsHelper $integrationsHelper)
     {
-        $this->integrationsHelper = $integrationsHelper;
     }
 
     public function isPublished(): bool
@@ -40,7 +34,7 @@ class Config
             $integration = $this->getIntegrationEntity();
 
             return (bool) $integration->getIsPublished() ?: false;
-        } catch (IntegrationNotFoundException $e) {
+        } catch (IntegrationNotFoundException) {
             return false;
         }
     }
@@ -73,7 +67,7 @@ class Config
             $integration = $this->getIntegrationEntity();
 
             return $integration->getFeatureSettings() ?: [];
-        } catch (IntegrationNotFoundException $e) {
+        } catch (IntegrationNotFoundException) {
             return [];
         }
     }
@@ -87,7 +81,7 @@ class Config
             $integration = $this->getIntegrationEntity();
 
             return $integration->getApiKeys() ?: [];
-        } catch (IntegrationNotFoundException $e) {
+        } catch (IntegrationNotFoundException) {
             return [];
         }
     }
@@ -101,7 +95,7 @@ class Config
             return $this->getMappedFieldsDirections($objectName)[$alias];
         }
 
-        throw new InvalidValueException("There is no field direction for '{$objectName}' field '${alias}'.");
+        throw new InvalidValueException("There is no field direction for '{$objectName}' field '{$alias}'.");
     }
 
     /**

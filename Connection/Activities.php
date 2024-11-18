@@ -8,16 +8,11 @@ use Symfony\Component\HttpFoundation\Request;
 
 class Activities
 {
-    private ?array $activities = null;
-
-    private Client $client;
-
-    public function __construct(Client $client)
+    public function __construct(private Client $client)
     {
-        $this->client = $client;
     }
 
-    public function addActivity(array $data)
+    public function addActivity(array $data): void
     {
         $this->client->getClient()->request(
             Request::METHOD_POST,

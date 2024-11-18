@@ -17,38 +17,20 @@ use MauticPlugin\PipedriveBundle\Integration\Pipedrive2Integration;
 use MauticPlugin\PipedriveBundle\Sync\Mapping\Field\FieldRepository;
 use MauticPlugin\PipedriveBundle\Sync\Mapping\Manual\MappingManualFactory;
 use MauticPlugin\PipedriveBundle\Sync\Sync\CompanyRelation\CompanyRelationSyncToIntegration;
-use Monolog\Logger;
+use Psr\Log\LoggerInterface;
 use Psr\Log\LogLevel;
 
 class OrderExecutioner
 {
-    const FORCE_SYNC = 'forceSync';
-
-    private Client $client;
-
-    private Config $config;
-
-    private FieldRepository $fieldRepository;
-
-    private Logger $logger;
-
-    private Owners $owners;
+    public const FORCE_SYNC = 'forceSync';
 
     private ValueNormalizer $valueNormalizer;
 
     private ?OrderDAO $order = null;
 
-    private \MauticPlugin\PipedriveBundle\Sync\Sync\CompanyRelation\CompanyRelationSyncToIntegration $relationSyncToIntegration;
-
-    public function __construct(Client $client, CompanyRelationSyncToIntegration $relationSyncToIntegration, Logger $logger, FieldRepository $fieldRepository, Config $config, Owners $owners)
+    public function __construct(private Client $client, private CompanyRelationSyncToIntegration $relationSyncToIntegration, private LoggerInterface $logger, private FieldRepository $fieldRepository, private Config $config, private Owners $owners)
     {
-        $this->client                    = $client;
         $this->valueNormalizer           = new ValueNormalizer();
-        $this->relationSyncToIntegration = $relationSyncToIntegration;
-        $this->logger                    = $logger;
-        $this->fieldRepository           = $fieldRepository;
-        $this->config                    = $config;
-        $this->owners                    = $owners;
     }
 
     public function execute(OrderDAO $orderDAO): void
@@ -86,7 +68,7 @@ class OrderExecutioner
     /**
      * @param ObjectChangeDAO[] $objects
      */
-    private function updateObjects(array $objects)
+    private function updateObjects(array $objects): void
     {
         foreach ($objects as $objectChangeDAO) {
             $objectName = $objectChangeDAO->getObject();
@@ -114,7 +96,7 @@ class OrderExecutioner
     /**
      * @param ObjectChangeDAO[] $objects
      */
-    private function insertObjects(array $objects)
+    private function insertObjects(array $objects): void
     {
         foreach ($objects as $objectChangeDAO) {
             $objectName = $objectChangeDAO->getObject();
@@ -211,11 +193,11 @@ class OrderExecutioner
             $datum['name']   = sprintf('%s %s', $datum['first_name'] ?? '', $datum['last_name'] ?? '');
             if ($this->config->shouldSyncContactsCompanyToIntegration()) {
                 $datum['org_id'] = $this->relationSyncToIntegration->sync(
-                $objectChangeDAO,
-                MappingManualFactory::COMPANY_OBJECT,
-                $this->order,
-                [self::FORCE_SYNC => true]
-            );
+                    $objectChangeDAO,
+                    MappingManualFactory::COMPANY_OBJECT,
+                    $this->order,
+                    [self::FORCE_SYNC => true]
+                );
             }
         }
 

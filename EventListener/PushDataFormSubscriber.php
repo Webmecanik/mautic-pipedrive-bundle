@@ -22,20 +22,8 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 class PushDataFormSubscriber implements EventSubscriberInterface
 {
-    /**
-     * @var SyncService
-     */
-    private $syncService;
-
-    /**
-     * @var Config
-     */
-    private $config;
-
-    public function __construct(SyncService $syncService, Config $config)
+    public function __construct(private SyncService $syncService, private Config $config)
     {
-        $this->syncService = $syncService;
-        $this->config      = $config;
     }
 
     /**
@@ -52,7 +40,7 @@ class PushDataFormSubscriber implements EventSubscriberInterface
     /**
      * @param CampaignBuilderEvent $event
      */
-    public function configureAction(FormBuilderEvent $event)
+    public function configureAction(FormBuilderEvent $event): void
     {
         if ($this->config->isConfigured()) {
             $action = [
@@ -67,7 +55,7 @@ class PushDataFormSubscriber implements EventSubscriberInterface
         }
     }
 
-    public function pushContacts(SubmissionEvent $event)
+    public function pushContacts(SubmissionEvent $event): void
     {
         try {
             $mauticObjectIds = new ObjectIdsDAO();
@@ -82,8 +70,7 @@ class PushDataFormSubscriber implements EventSubscriberInterface
                 ]
             );
             $this->syncService->processIntegrationSync($inputOptions);
-        } catch (IntegrationNotFoundException $integrationNotFoundException) {
-        } catch (InvalidValueException $invalidValueException) {
+        } catch (IntegrationNotFoundException|InvalidValueException) {
         }
     }
 }

@@ -10,14 +10,8 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 class SyncEventsSubscriber implements EventSubscriberInterface
 {
-    private Config $config;
-
-    private SyncEvents $syncEvents;
-
-    public function __construct(Config $config, SyncEvents $syncEvents)
+    public function __construct(private Config $config, private SyncEvents $syncEvents)
     {
-        $this->config     = $config;
-        $this->syncEvents = $syncEvents;
     }
 
     public static function getSubscribedEvents()
@@ -27,7 +21,7 @@ class SyncEventsSubscriber implements EventSubscriberInterface
         ];
     }
 
-    public function onIntegrationPostExecute(SyncEvent $syncEvent)
+    public function onIntegrationPostExecute(SyncEvent $syncEvent): void
     {
         $this->syncEvents($syncEvent);
     }

@@ -19,35 +19,20 @@ use MauticPlugin\PipedriveBundle\Exception\PipedriveBundleMappingException;
 use MauticPlugin\PipedriveBundle\Integration\Config;
 use MauticPlugin\PipedriveBundle\Integration\Pipedrive2Integration;
 use MauticPlugin\PipedriveBundle\Sync\Mapping\Manual\MappingManualFactory;
-use Monolog\Logger;
+use Psr\Log\LoggerInterface;
 use Psr\Http\Message\ResponseInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
-use Symfony\Component\Routing\Router;
+use Symfony\Component\Routing\RouterInterface;
 
 class Client
 {
-    const LIMIT = 100;
+    public const LIMIT = 100;
 
     private string $apiUrl;
 
-    private \Mautic\IntegrationsBundle\Auth\Provider\Oauth2ThreeLegged\HttpFactory $httpFactory;
-
-    private \MauticPlugin\PipedriveBundle\Integration\Config $config;
-
-    private ConnectionConfig $connectionConfig;
-
-    private \Monolog\Logger $logger;
-
-    private \Symfony\Component\Routing\Router $router;
-
-    public function __construct(HttpFactory $httpFactory, Config $config, ConnectionConfig $connectionConfig, Logger $logger, Router $router)
+    public function __construct(private HttpFactory $httpFactory, private Config $config, private ConnectionConfig $connectionConfig, private LoggerInterface $logger, private RouterInterface $router)
     {
-        $this->httpFactory      = $httpFactory;
-        $this->config           = $config;
-        $this->connectionConfig = $connectionConfig;
-        $this->logger           = $logger;
-        $this->router           = $router;
         $this->apiUrl           = sprintf(
             'https://%s.pipedrive.com/v1/',
             $config->getApiKeys()[SettingsEnum::PIPEDRIVE_INSTANCE_NAME_FIELD] ?? ''
@@ -78,7 +63,7 @@ class Client
      * @throws IntegrationNotFoundException
      * @throws InvalidCredentialsException
      */
-    public function get(string $objectName, ?\DateTimeInterface $startDateTime, ?\DateTimeInterface $endDateTime, int $page = 1, int $limit = 500)
+    public function get(string $objectName, ?\DateTimeInterface $startDateTime, ?\DateTimeInterface $endDateTime, int $page = 1, int $limit = 500): array
     {
         $response =  $this->getForPage($objectName, $limit, $page, $startDateTime, $endDateTime);
 
@@ -90,8 +75,8 @@ class Client
         $url      = $this->getUrl(MappingManualFactory::CONTACT_OBJECT === $objectName ? SettingsEnum::PIPEDRIVE_PERSON_ENDPOINT : SettingsEnum::PIPEDRIVE_ORGANIZATION_ENDPOINT);
 
         return $this->getClient()->request('POST', $url, [
-                'json' => $payload,
-            ]);
+            'json' => $payload,
+        ]);
     }
 
     public function update(string $objectName, array $payload, $integrationId): ResponseInterface
@@ -99,11 +84,11 @@ class Client
         $url      = $this->getUrl(MappingManualFactory::CONTACT_OBJECT === $objectName ? SettingsEnum::PIPEDRIVE_PERSON_ENDPOINT : SettingsEnum::PIPEDRIVE_ORGANIZATION_ENDPOINT).'/'.$integrationId;
 
         return $this->getClient()->request('PUT', $url, [
-                    'json' => $payload,
-                ]);
+            'json' => $payload,
+        ]);
     }
 
-    public function search(string $objectName, array $data)
+    public function search(string $objectName, array $data): ResponseInterface
     {
         $payload = [
             'exact_match' => 'true',
@@ -126,7 +111,7 @@ class Client
         $chunkObjectIds = array_chunk($objectIds, 400);
 
         foreach ($chunkObjectIds as $objectIds) {
-            $url    = $this->getUrl((MappingManualFactory::CONTACT_OBJECT === $objectName ? SettingsEnum::PIPEDRIVE_PERSON_ENDPOINT : SettingsEnum::PIPEDRIVE_ORGANIZATION_ENDPOINT));
+            $url    = $this->getUrl(MappingManualFactory::CONTACT_OBJECT === $objectName ? SettingsEnum::PIPEDRIVE_PERSON_ENDPOINT : SettingsEnum::PIPEDRIVE_ORGANIZATION_ENDPOINT);
             try {
                 $this->getClient()->request('DELETE', $url, ['query' => ['ids' => $objectIds]]);
             } catch (RequestException $e) {
@@ -143,18 +128,11 @@ class Client
 
     public function getFields(string $objectName): ?array
     {
-        switch ($objectName) {
-            case MappingManualFactory::CONTACT_OBJECT:
-                $url = $this->getUrl(SettingsEnum::PIPEDRIVE_PERSON_FIELD_ENDPOINT);
-                break;
-
-            case MappingManualFactory::COMPANY_OBJECT:
-                $url = $this->getUrl(SettingsEnum::PIPEDRIVE_ORGANIZATION_FIELD_ENDPOINT);
-                break;
-
-            default:
-                throw new PipedriveBundleMappingException(sprintf('Unknow object %s', $objectName));
-        }
+        $url = match ($objectName) {
+            MappingManualFactory::CONTACT_OBJECT => $this->getUrl(SettingsEnum::PIPEDRIVE_PERSON_FIELD_ENDPOINT),
+            MappingManualFactory::COMPANY_OBJECT => $this->getUrl(SettingsEnum::PIPEDRIVE_ORGANIZATION_FIELD_ENDPOINT),
+            default                              => throw new PipedriveBundleMappingException(sprintf('Unknow object %s', $objectName)),
+        };
 
         $data      = [];
         $nextStart = 0;
@@ -274,7 +252,7 @@ class Client
         );
     }
 
-    private function logError(string $method, array $args, ?string $error)
+    private function logError(string $method, array $args, ?string $error): void
     {
         $this->logger->error(sprintf('%s %s: %s', __METHOD__, json_encode(func_get_args()), $error));
     }
@@ -319,19 +297,11 @@ class Client
      */
     protected function getAllUrl(string $objectName): string
     {
-        switch ($objectName) {
-            case MappingManualFactory::CONTACT_OBJECT:
-                $url = $this->getUrl(SettingsEnum::PIPEDRIVE_PERSON_ENDPOINT);
-                break;
-            case MappingManualFactory::COMPANY_OBJECT:
-                $url = $this->getUrl(SettingsEnum::PIPEDRIVE_ORGANIZATION_ENDPOINT);
-                break;
-
-            default:
-                throw new PipedriveBundleMappingException(sprintf('Unknow object %s', $objectName));
-        }
-
-        return $url;
+        return match ($objectName) {
+            MappingManualFactory::CONTACT_OBJECT => $this->getUrl(SettingsEnum::PIPEDRIVE_PERSON_ENDPOINT),
+            MappingManualFactory::COMPANY_OBJECT => $this->getUrl(SettingsEnum::PIPEDRIVE_ORGANIZATION_ENDPOINT),
+            default                              => throw new PipedriveBundleMappingException(sprintf('Unknow object %s', $objectName)),
+        };
     }
 
     /**

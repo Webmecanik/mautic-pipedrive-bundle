@@ -22,22 +22,10 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 class PushDataPointSubscriber implements EventSubscriberInterface
 {
     /**
-     * @var SyncService
-     */
-    private $syncService;
-
-    /**
-     * @var Config
-     */
-    private $config;
-
-    /**
      * PushDataPointSubscriber constructor.
      */
-    public function __construct(SyncService $syncService, Config $config)
+    public function __construct(private SyncService $syncService, private Config $config)
     {
-        $this->syncService = $syncService;
-        $this->config      = $config;
     }
 
     /**
@@ -51,7 +39,7 @@ class PushDataPointSubscriber implements EventSubscriberInterface
         ];
     }
 
-    public function configureTrigger(TriggerBuilderEvent $event)
+    public function configureTrigger(TriggerBuilderEvent $event): void
     {
         if ($this->config->isConfigured()) {
             $action = [
@@ -66,10 +54,10 @@ class PushDataPointSubscriber implements EventSubscriberInterface
     }
 
     /**
-     * @throws \Mautic\IntegrationsBundle\Exception\IntegrationNotFoundException
-     * @throws \Mautic\IntegrationsBundle\Exception\InvalidValueException
+     * @throws IntegrationNotFoundException
+     * @throws InvalidValueException
      */
-    public function pushContacts(TriggerExecutedEvent $event)
+    public function pushContacts(TriggerExecutedEvent $event): void
     {
         try {
             $mauticObjectIds = new ObjectIdsDAO();
@@ -85,9 +73,7 @@ class PushDataPointSubscriber implements EventSubscriberInterface
             );
             $this->syncService->processIntegrationSync($inputOptions);
             $event->setSucceded();
-        } catch (IntegrationNotFoundException $integrationNotFoundException) {
-            $event->setFailed();
-        } catch (InvalidValueException $invalidValueException) {
+        } catch (IntegrationNotFoundException|InvalidValueException) {
             $event->setFailed();
         }
     }

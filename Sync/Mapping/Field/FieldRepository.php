@@ -11,16 +11,10 @@ use MauticPlugin\PipedriveBundle\Sync\Mapping\Manual\MappingManualFactory;
 
 class FieldRepository
 {
-    private \Mautic\CoreBundle\Helper\CacheStorageHelper $cacheProvider;
-
-    private Client $client;
-
     private array $apiFields = [];
 
-    public function __construct(CacheStorageHelper $cacheProvider, Client $client)
+    public function __construct(private CacheStorageHelper $cacheProvider, private Client $client)
     {
-        $this->cacheProvider = $cacheProvider;
-        $this->client        = $client;
     }
 
     /**
@@ -116,7 +110,7 @@ class FieldRepository
         $fieldObjects = [];
         foreach ($fields as $field) {
             if ($this->isFieldEligibleForObject($field, $objectName)) {
-                $fieldObjects[$field['key']] = new Field($field, $objectName);
+                $fieldObjects[$field['key']] = new Field($objectName, $field);
             }
         }
 

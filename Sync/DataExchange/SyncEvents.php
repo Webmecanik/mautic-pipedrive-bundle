@@ -17,29 +17,14 @@ use Symfony\Component\Console\Output\ConsoleOutput;
 
 class SyncEvents
 {
-    private Activities $activities;
-
-    private Config $config;
-
-    private EntityManager $em;
-
-    private LeadModel $leadModel;
-
-    private ObjectMappingRepository $objectMappingRepository;
-
     private ConsoleOutput $output;
 
-    public function __construct(ObjectMappingRepository $objectMappingRepository, LeadModel $leadModel, EntityManager $em, Config $config, Activities $activities)
+    public function __construct(private ObjectMappingRepository $objectMappingRepository, private LeadModel $leadModel, private EntityManager $em, private Config $config, private Activities $activities)
     {
-        $this->objectMappingRepository = $objectMappingRepository;
-        $this->leadModel               = $leadModel;
-        $this->em                      = $em;
-        $this->config                  = $config;
-        $this->activities              = $activities;
         $this->output                  = new ConsoleOutput();
     }
 
-    public function sync(?\DateTimeInterface $startDateTime, ?\DateTimeInterface $endDateTime)
+    public function sync(?\DateTimeInterface $startDateTime, ?\DateTimeInterface $endDateTime): void
     {
         $allContacts       = $this->objectMappingRepository->getAllContacts();
         $idsToSyncActivity = array_combine(

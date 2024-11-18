@@ -8,11 +8,8 @@ use Mautic\IntegrationsBundle\Mapping\MappedFieldInfoInterface;
 
 class MappedFieldInfo implements MappedFieldInfoInterface
 {
-    private Field $field;
-
-    public function __construct(Field $field)
+    public function __construct(private Field $field)
     {
-        $this->field = $field;
     }
 
     public function getName(): string

@@ -10,24 +10,15 @@ use MauticPlugin\PipedriveBundle\Connection\Client;
 use MauticPlugin\PipedriveBundle\Integration\Config;
 use MauticPlugin\PipedriveBundle\Integration\Pipedrive2Integration;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Session\Session;
-use Symfony\Component\Translation\TranslatorInterface;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 class AuthSupport extends Pipedrive2Integration implements AuthenticationInterface
 {
-    private \MauticPlugin\PipedriveBundle\Connection\Client $client;
+    private TranslatorInterface $translator;
 
-    private \MauticPlugin\PipedriveBundle\Integration\Config $config;
-
-    private \Symfony\Component\HttpFoundation\Session\Session $session;
-
-    private \Symfony\Component\Translation\TranslatorInterface $translator;
-
-    public function __construct(Client $client, Config $config, Session $session, TranslatorInterface $translator)
+    public function __construct(private Client $client, private Config $config, private SessionInterface $session, TranslatorInterface $translator)
     {
-        $this->client     = $client;
-        $this->config     = $config;
-        $this->session    = $session;
         $this->translator = $translator;
     }
 

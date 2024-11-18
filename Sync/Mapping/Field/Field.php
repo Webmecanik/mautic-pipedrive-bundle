@@ -12,18 +12,16 @@ class Field
 {
     private $name;
     private $key;
-    private $label;
     private $dataType;
     private ?bool $isRequired = null;
     private bool $isWritable;
 
     private array $options;
 
-    public function __construct(array $field = [], string $objectName)
+    public function __construct(string $objectName, array $field = [])
     {
         $this->name       = $field['name'] ?? '';
         $this->key        = $field['key'] ?? '';
-        $this->label      = $field['label'] ?? '';
         $this->dataType   = $field['field_type'] ?? 'text';
         $this->options    = (array) ($field['options'] ?? []);
         if (MappingManualFactory::CONTACT_OBJECT === $objectName) {
@@ -54,9 +52,6 @@ class Field
         return $this->dataType;
     }
 
-    /**
-     * @return array
-     */
     public function getOptions(): ?array
     {
         return $this->options;

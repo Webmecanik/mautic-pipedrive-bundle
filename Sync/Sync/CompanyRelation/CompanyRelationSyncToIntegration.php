@@ -16,38 +16,17 @@ use Mautic\LeadBundle\Model\CompanyModel;
 class CompanyRelationSyncToIntegration
 {
     /**
-     * @var CompanyModel
-     */
-    private $companyModel;
-
-    /**
-     * @var SyncService
-     */
-    private $syncService;
-
-    /**
      * @param ObjectChangeDAO[] $objects
      */
-    private $objects = [];
+    private array $objects = [];
 
-    /**
-     * @var ObjectMappingRepository
-     */
-    private $objectMappingRepository;
-
-    /**
-     * @var array
-     */
-    private $companiesForContactId;
+    private ?array $companiesForContactId = null;
 
     /**
      * CompanyRelationSync constructor.
      */
-    public function __construct(CompanyModel $companyModel, SyncService $syncService, ObjectMappingRepository $objectMappingRepository)
+    public function __construct(private CompanyModel $companyModel, private SyncService $syncService, private ObjectMappingRepository $objectMappingRepository)
     {
-        $this->companyModel            = $companyModel;
-        $this->syncService             = $syncService;
-        $this->objectMappingRepository = $objectMappingRepository;
     }
 
     public function sync(ObjectChangeDAO $objectChangeDAO, string $integrationCompanyObject, OrderDAO $orderDAO = null, array $options = [])
@@ -115,7 +94,7 @@ class CompanyRelationSyncToIntegration
         return null;
     }
 
-    private function fetchCompaniesFromObject(ObjectChangeDAO $object)
+    private function fetchCompaniesFromObject(ObjectChangeDAO $object): void
     {
         $this->fetchCompaniesFromObjects([$object]);
     }
@@ -123,7 +102,7 @@ class CompanyRelationSyncToIntegration
     /**
      * @param ObjectChangeDAO[] $objects
      */
-    public function fetchCompaniesFromObjects(array $objects)
+    public function fetchCompaniesFromObjects(array $objects): void
     {
         $this->objects = $objects;
 
@@ -183,7 +162,7 @@ class CompanyRelationSyncToIntegration
         return $primaryCompany;
     }
 
-    public function getCompanyIntegrationId(string $companyName)
+    public function getCompanyIntegrationId(string $companyName): ?string
     {
         $company = $this->companyModel->getRepository()->findOneBy(['name' => $companyName]);
         if (!$company) {

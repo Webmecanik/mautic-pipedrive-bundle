@@ -22,22 +22,10 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 class PushDataCampaignSubscriber implements EventSubscriberInterface
 {
     /**
-     * @var SyncService
-     */
-    private $syncService;
-
-    /**
-     * @var Config
-     */
-    private $config;
-
-    /**
      * PushDataCampaignSubscriber constructor.
      */
-    public function __construct(SyncService $syncService, Config $config)
+    public function __construct(private SyncService $syncService, private Config $config)
     {
-        $this->syncService        = $syncService;
-        $this->config             = $config;
     }
 
     /**
@@ -51,7 +39,7 @@ class PushDataCampaignSubscriber implements EventSubscriberInterface
         ];
     }
 
-    public function configureAction(CampaignBuilderEvent $event)
+    public function configureAction(CampaignBuilderEvent $event): void
     {
         if ($this->config->isConfigured()) {
             $event->addAction(
@@ -68,10 +56,10 @@ class PushDataCampaignSubscriber implements EventSubscriberInterface
     }
 
     /**
-     * @throws \Mautic\IntegrationsBundle\Exception\IntegrationNotFoundException
-     * @throws \Mautic\IntegrationsBundle\Exception\InvalidValueException
+     * @throws IntegrationNotFoundException
+     * @throws InvalidValueException
      */
-    public function pushContacts(PendingEvent $event)
+    public function pushContacts(PendingEvent $event): void
     {
         $contactIds = $event->getContactIds();
         try {

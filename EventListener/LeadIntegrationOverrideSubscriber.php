@@ -16,18 +16,20 @@ use Mautic\LeadBundle\Event\CompanyEvent;
 use Mautic\LeadBundle\Event\LeadEvent;
 use Mautic\LeadBundle\LeadEvents;
 use MauticPlugin\PipedriveBundle\Integration\Config;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 class LeadIntegrationOverrideSubscriber extends LeadSubscriber
 {
     public function __construct(
         private FieldChangeRepository $fieldChangeRepo,
-        private ObjectMappingRepository $objectMappingRepository,
-        private VariableExpresserHelperInterface $variableExpressor,
-        private SyncIntegrationsHelper $syncIntegrationsHelper,
+        ObjectMappingRepository $objectMappingRepository,
+        VariableExpresserHelperInterface $variableExpressor,
+        SyncIntegrationsHelper $syncIntegrationsHelper,
+        EventDispatcherInterface $dispatcher,
         private Config $config,
         private \MauticPlugin\PipedriveBundle\Repository\ObjectMappingRepository $pipedriveObjectMappingRepository
     ) {
-        parent::__construct($fieldChangeRepo, $objectMappingRepository, $variableExpressor, $syncIntegrationsHelper);
+        parent::__construct($fieldChangeRepo, $objectMappingRepository, $variableExpressor, $syncIntegrationsHelper, $dispatcher);
     }
 
     public static function getSubscribedEvents(): array

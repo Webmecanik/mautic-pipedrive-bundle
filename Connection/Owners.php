@@ -11,16 +11,10 @@ use Symfony\Component\HttpFoundation\Request;
 
 class Owners
 {
-    private Client $client;
-
     private ?array $pipedriveOwners;
 
-    private UserModel $userModel;
-
-    public function __construct(Client $client, UserModel $userModel)
+    public function __construct(private Client $client, private UserModel $userModel)
     {
-        $this->client    = $client;
-        $this->userModel = $userModel;
     }
 
     public function getInternalIdFromEmail(?string $ownerEmail)
@@ -66,7 +60,7 @@ class Owners
             try {
                 $response              = new Response($this->client->getClient()->request(Request::METHOD_GET, $uri));
                 $this->pipedriveOwners = $response->getData() ?? [];
-            } catch (RequestException $requestException) {
+            } catch (RequestException) {
                 $this->pipedriveOwners = [];
             }
         }

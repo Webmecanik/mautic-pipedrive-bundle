@@ -12,14 +12,8 @@ use MauticPlugin\PipedriveBundle\Sync\Mapping\Manual\MappingManualFactory;
 
 class SyncSupport extends Pipedrive2Integration implements SyncInterface
 {
-    private \MauticPlugin\PipedriveBundle\Sync\Mapping\Manual\MappingManualFactory $mappingManualFactory;
-
-    private \Mautic\IntegrationsBundle\Sync\SyncDataExchange\SyncDataExchangeInterface $syncDataExchange;
-
-    public function __construct(MappingManualFactory $mappingManualFactory, SyncDataExchangeInterface $syncDataExchange)
+    public function __construct(private MappingManualFactory $mappingManualFactory, private SyncDataExchangeInterface $syncDataExchange)
     {
-        $this->mappingManualFactory = $mappingManualFactory;
-        $this->syncDataExchange     = $syncDataExchange;
     }
 
     public function getSyncDataExchange(): SyncDataExchangeInterface

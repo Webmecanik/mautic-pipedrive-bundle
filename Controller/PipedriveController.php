@@ -2,7 +2,15 @@
 
 namespace MauticPlugin\PipedriveBundle\Controller;
 
+use Doctrine\Persistence\ManagerRegistry;
 use Mautic\CoreBundle\Controller\CommonController;
+use Mautic\CoreBundle\Factory\MauticFactory;
+use Mautic\CoreBundle\Factory\ModelFactory;
+use Mautic\CoreBundle\Helper\CoreParametersHelper;
+use Mautic\CoreBundle\Helper\UserHelper;
+use Mautic\CoreBundle\Security\Permissions\CorePermissions;
+use Mautic\CoreBundle\Service\FlashBag;
+use Mautic\CoreBundle\Translation\Translator;
 use Mautic\IntegrationsBundle\Entity\ObjectMappingRepository;
 use Mautic\IntegrationsBundle\Sync\SyncDataExchange\Internal\Object\Company;
 use Mautic\IntegrationsBundle\Sync\SyncDataExchange\Internal\Object\Contact;
@@ -11,25 +19,39 @@ use Mautic\LeadBundle\Model\LeadModel;
 use MauticPlugin\PipedriveBundle\Integration\Config;
 use MauticPlugin\PipedriveBundle\Integration\Pipedrive2Integration;
 use MauticPlugin\PipedriveBundle\Sync\Mapping\Manual\MappingManualFactory;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
 
 class PipedriveController extends CommonController
 {
-    const INTEGRATION_NAME  = 'Pipedrive2';
-    const LEAD_DELETE_EVENT = 'deleted.person';
+    public const INTEGRATION_NAME  = 'Pipedrive2';
+    public const LEAD_DELETE_EVENT = 'deleted.person';
 
-    const COMPANY_DELETE_EVENT = 'deleted.organization';
+    public const COMPANY_DELETE_EVENT = 'deleted.organization';
 
-    public function __construct(private Config $config, private ObjectMappingRepository $objectMappingRepository, private LeadModel $leadModel, private CompanyModel $companyModel)
+    public function __construct(
+        private Config $config,
+        private ObjectMappingRepository $objectMappingRepository,
+        private LeadModel $leadModel,
+        private CompanyModel $companyModel,
+        ManagerRegistry $doctrine,
+        MauticFactory $factory,
+        ModelFactory $modelFactory,
+        UserHelper $userHelper,
+        CoreParametersHelper $coreParametersHelper,
+        EventDispatcherInterface $dispatcher,
+        Translator $translator,
+        FlashBag $flashBag,
+        RequestStack $requestStack,
+        CorePermissions $security)
     {
+        parent::__construct($doctrine, $factory, $modelFactory, $userHelper, $coreParametersHelper, $dispatcher, $translator, $flashBag, $requestStack, $security);
     }
 
-    /**
-     * @return JsonResponse
-     */
-    public function webhookAction(Request $request)
+    public function webhookAction(Request $request): JsonResponse
     {
         if (!$this->config->isPublished() || !$this->config->isConfigured() || !$this->config->shouldDelete()) {
             return new JsonResponse([

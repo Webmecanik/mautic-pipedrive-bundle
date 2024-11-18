@@ -11,17 +11,11 @@ use Mautic\IntegrationsBundle\Sync\SyncDataExchange\SyncDataExchangeInterface;
 
 class SyncDataExchange implements SyncDataExchangeInterface
 {
-    private ReportBuilder $reportBuilder;
-
-    private OrderExecutioner $orderExecutioner;
-
     /**
      * SyncDataExchange constructor.
      */
-    public function __construct(ReportBuilder $reportBuilder, OrderExecutioner $orderExecutioner)
+    public function __construct(private ReportBuilder $reportBuilder, private OrderExecutioner $orderExecutioner)
     {
-        $this->reportBuilder    = $reportBuilder;
-        $this->orderExecutioner = $orderExecutioner;
     }
 
     public function getSyncReport(RequestDAO $requestDAO): ReportDAO

@@ -23,38 +23,25 @@ use MauticPlugin\PipedriveBundle\Integration\Config;
 use MauticPlugin\PipedriveBundle\Integration\Pipedrive2Integration;
 use MauticPlugin\PipedriveBundle\Sync\Mapping\Field\FieldRepository;
 use MauticPlugin\PipedriveBundle\Sync\Mapping\Manual\MappingManualFactory;
-use Symfony\Component\HttpFoundation\Session\Session;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
-use Symfony\Component\Routing\Router;
-use Symfony\Component\Translation\TranslatorInterface;
-
+use Symfony\Component\Routing\RouterInterface;
+use Symfony\Contracts\Translation\TranslatorInterface;
 class ConfigSupport extends Pipedrive2Integration implements ConfigFormInterface, ConfigFormAuthInterface, ConfigFormFeatureSettingsInterface, ConfigFormSyncInterface, ConfigFormFeaturesInterface, ConfigFormAuthorizeButtonInterface, ConfigFormCallbackInterface
 {
     use DefaultConfigFormTrait;
 
-    const DISABLE_PUSH                           = 'disable_push';
-    const DISABLE_PULL                           = 'disable_pull';
+    public const DISABLE_PUSH                           = 'disable_push';
+    public const DISABLE_PULL                           = 'disable_pull';
 
-    const SYNC_CONTACTS_COMPANY_FROM_INTEGRATION = 'contacts_company_from_integration';
+    public const SYNC_CONTACTS_COMPANY_FROM_INTEGRATION = 'contacts_company_from_integration';
 
-    const SYNC_CONTACTS_COMPANY_TO_INTEGRATION   = 'contacts_company_to_integration';
-
-    private FieldRepository $fieldRepository;
-
-    private Config $config;
-
-    private Session $session;
-
-    private Router $router;
+    public const SYNC_CONTACTS_COMPANY_TO_INTEGRATION   = 'contacts_company_to_integration';
 
     private TranslatorInterface $translator;
 
-    public function __construct(FieldRepository $fieldRepository, Config $config, Session $session, Router $router, TranslatorInterface $translator)
+    public function __construct(private FieldRepository $fieldRepository, private Config $config, private SessionInterface $session, private RouterInterface $router, TranslatorInterface $translator)
     {
-        $this->fieldRepository = $fieldRepository;
-        $this->session         = $session;
-        $this->router          = $router;
-        $this->config          = $config;
         $this->translator      = $translator;
     }
 
@@ -182,7 +169,7 @@ class ConfigSupport extends Pipedrive2Integration implements ConfigFormInterface
         }
 
         foreach ($params as $param => $value) {
-            if (false !== strpos($uri, '?')) {
+            if (str_contains($uri, '?')) {
                 $uri = $uri.'&'.$param.'='.$value;
             } else {
                 $uri = $uri.'?'.$param.'='.$value;

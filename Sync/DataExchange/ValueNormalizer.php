@@ -11,35 +11,29 @@ use MauticPlugin\PipedriveBundle\Sync\Mapping\Field\Field;
 class ValueNormalizer implements ValueNormalizerInterface
 {
     // Example of a type that could require values to be transformed to supported format by each side of the sync
-    const BOOLEAN_TYPE = 'bool';
+    public const BOOLEAN_TYPE = 'bool';
 
-    const DATE         = 'date';
+    public const DATE         = 'date';
 
-    const DOUBLE       = 'double';
+    public const DOUBLE       = 'double';
 
-    const ENUM         = 'enum';
+    public const ENUM         = 'enum';
 
-    const ORG          = 'org';
+    public const ORG          = 'org';
 
-    const PHONE        = 'phone';
+    public const PHONE        = 'phone';
 
-    const SET          = 'set';
+    public const SET          = 'set';
 
     public function normalizeForIntegration(NormalizedValueDAO $value, Field $field = null)
     {
-        switch ($value->getType()) {
-            case NormalizedValueDAO::TIME_TYPE:
-                return $value->getNormalizedValue() instanceof \DateTimeInterface ? $value->getNormalizedValue()->format('H:i:s') : $value->getNormalizedValue();
-            case NormalizedValueDAO::DATE_TYPE:
-                return $value->getNormalizedValue() instanceof \DateTimeInterface ? $value->getNormalizedValue()->format('Y-m-d') : $value->getNormalizedValue();
-            case NormalizedValueDAO::DATETIME_TYPE:
-                return $value->getNormalizedValue() instanceof \DateTimeInterface ? $value->getNormalizedValue()->format('Y-m-d H:i:s') : $value->getNormalizedValue();
-            case NormalizedValueDAO::SELECT_TYPE:
-            case NormalizedValueDAO::MULTISELECT_TYPE:
-              return $this->getOptionsForPipedrive($value->getNormalizedValue(), $field);
-            default:
-                return $value->getNormalizedValue();
-        }
+        return match ($value->getType()) {
+            NormalizedValueDAO::TIME_TYPE     => $value->getNormalizedValue() instanceof \DateTimeInterface ? $value->getNormalizedValue()->format('H:i:s') : $value->getNormalizedValue(),
+            NormalizedValueDAO::DATE_TYPE     => $value->getNormalizedValue() instanceof \DateTimeInterface ? $value->getNormalizedValue()->format('Y-m-d') : $value->getNormalizedValue(),
+            NormalizedValueDAO::DATETIME_TYPE => $value->getNormalizedValue() instanceof \DateTimeInterface ? $value->getNormalizedValue()->format('Y-m-d H:i:s') : $value->getNormalizedValue(),
+            NormalizedValueDAO::SELECT_TYPE, NormalizedValueDAO::MULTISELECT_TYPE => $this->getOptionsForPipedrive($value->getNormalizedValue(), $field),
+            default => $value->getNormalizedValue(),
+        };
     }
 
     public function normalizeForMautic($value, $type, Field $field = null): NormalizedValueDAO
@@ -83,7 +77,7 @@ class ValueNormalizer implements ValueNormalizerInterface
 
         foreach ($values as $val) {
             $val = is_array($val) ? ($val['value'] ?? null) : $val;
-            if ($val !== null) {
+            if (null !== $val) {
                 foreach ($field->getOptions() as $option) {
                     if ($option['id'] == $val) {
                         $options[] = $option['label'];
@@ -111,7 +105,7 @@ class ValueNormalizer implements ValueNormalizerInterface
             }
         }
 
-        if ($field->getKey() === 'label_ids') {
+        if ('label_ids' === $field->getKey()) {
             return $options;
         }
 

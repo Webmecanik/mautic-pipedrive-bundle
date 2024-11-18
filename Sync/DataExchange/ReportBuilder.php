@@ -28,27 +28,14 @@ use Psr\Log\LogLevel;
 
 class ReportBuilder
 {
-    private Client $client;
-
-    private Config $config;
-
-    private FieldRepository $fieldRepository;
-
-    private Owners $owners;
-
     private ValueNormalizer $valueNormalizer;
 
     private ?ReportDAO $report = null;
 
-    public function __construct(Client $client, Config $config, FieldRepository $fieldRepository, Owners $owners)
+    public function __construct(private Client $client, private Config $config, private FieldRepository $fieldRepository, private Owners $owners)
     {
-        $this->client          = $client;
-        $this->config          = $config;
-        $this->fieldRepository = $fieldRepository;
-
         // Value normalizer transforms value types expected by each side of the sync
         $this->valueNormalizer = new ValueNormalizer();
-        $this->owners          = $owners;
     }
 
     /**
@@ -181,13 +168,13 @@ class ReportBuilder
                     $itemsToMautic[] = $data;
                 }
             }
-        } catch (ObjectNotFoundException $objectNotFoundException) {
+        } catch (ObjectNotFoundException) {
         }
 
         return $itemsToMautic;
     }
 
-    private function hasRequiredFields(string $objectName, array $data)
+    private function hasRequiredFields(string $objectName, array $data): bool
     {
         $requiredFields = $this->fieldRepository->getRequiredFieldsForMapping($objectName);
         $mappedFields   = $this->config->getMappedFields($objectName);

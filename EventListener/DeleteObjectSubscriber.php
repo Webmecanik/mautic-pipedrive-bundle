@@ -16,26 +16,8 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 
 class DeleteObjectSubscriber implements EventSubscriberInterface
 {
-    private Client $client;
-
-    private Config $config;
-
-    private FieldChangeRepository $fieldChangeRepository;
-
-    private LeadModel $leadModel;
-
-    private ObjectMappingRepository $objectMappingRepository;
-
-    private TranslatorInterface $translator;
-
-    public function __construct(Client $client, ObjectMappingRepository $objectMappingRepository, FieldChangeRepository $fieldChangeRepository, LeadModel $leadModel, Config $config, TranslatorInterface $translator)
+    public function __construct(private Client $client, private ObjectMappingRepository $objectMappingRepository, FieldChangeRepository $fieldChangeRepository, LeadModel $leadModel, private Config $config, private TranslatorInterface $translator)
     {
-        $this->client                  = $client;
-        $this->objectMappingRepository = $objectMappingRepository;
-        $this->fieldChangeRepository   = $fieldChangeRepository;
-        $this->leadModel               = $leadModel;
-        $this->config                  = $config;
-        $this->translator              = $translator;
     }
 
     public static function getSubscribedEvents()
@@ -45,7 +27,7 @@ class DeleteObjectSubscriber implements EventSubscriberInterface
         ];
     }
 
-    public function onIntegrationPostExecute(SyncEvent $syncEvent)
+    public function onIntegrationPostExecute(SyncEvent $syncEvent): void
     {
         if (!$this->config->isPublished() || !$this->config->shouldDelete()) {
             return;

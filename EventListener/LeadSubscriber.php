@@ -13,17 +13,8 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 class LeadSubscriber implements EventSubscriberInterface
 {
-    private Config $config;
-
-    private FieldChangeRepository $fieldChangeRepo;
-
-    private ObjectMappingRepository $objectMappingRepository;
-
-    public function __construct(FieldChangeRepository $fieldChangeRepo, ObjectMappingRepository $objectMappingRepository, Config $config)
+    public function __construct(FieldChangeRepository $fieldChangeRepo, private ObjectMappingRepository $objectMappingRepository, Config $config)
     {
-        $this->fieldChangeRepo         = $fieldChangeRepo;
-        $this->objectMappingRepository = $objectMappingRepository;
-        $this->config                  = $config;
     }
 
     public static function getSubscribedEvents(): array
@@ -39,12 +30,12 @@ class LeadSubscriber implements EventSubscriberInterface
         return $events;
     }
 
-    public function onLeadMerge(LeadMergeEvent $event)
+    public function onLeadMerge(LeadMergeEvent $event): void
     {
         $this->objectMappingRepository->deleteObjectMappingForObject([$event->getLoser()->getId()], MappingManualFactory::CONTACT_OBJECT);
     }
 
-    public function onCompanyMerge(CompanyMergeEvent $event)
+    public function onCompanyMerge(CompanyMergeEvent $event): void
     {
         $this->objectMappingRepository->deleteObjectMappingForObject([$event->getLoser()->getId()], MappingManualFactory::COMPANY_OBJECT);
     }

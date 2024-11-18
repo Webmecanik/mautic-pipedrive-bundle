@@ -19,16 +19,10 @@ class MappingManualFactory
     public const CONTACT_OBJECT       = 'person';
     public const COMPANY_OBJECT       = 'organization';
 
-    private FieldRepository $fieldRepository;
-
-    private Config $config;
-
     private ?MappingManualDAO $manual = null;
 
-    public function __construct(FieldRepository $fieldRepository, Config $config)
+    public function __construct(private FieldRepository $fieldRepository, private Config $config)
     {
-        $this->fieldRepository = $fieldRepository;
-        $this->config          = $config;
     }
 
     public function getManual(): MappingManualDAO
@@ -96,13 +90,10 @@ class MappingManualFactory
      */
     private function getMauticObjectName(string $objectName): string
     {
-        switch ($objectName) {
-            case self::COMPANY_OBJECT:
-                return Company::NAME;
-            case self::CONTACT_OBJECT:
-                return Contact::NAME;
-        }
-
-        throw new InvalidValueException("$objectName could not be mapped to a Mautic object");
+        return match ($objectName) {
+            self::COMPANY_OBJECT => Company::NAME,
+            self::CONTACT_OBJECT => Contact::NAME,
+            default              => throw new InvalidValueException("$objectName could not be mapped to a Mautic object"),
+        };
     }
 }
