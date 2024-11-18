@@ -87,9 +87,8 @@ class MappingManualFactory
             if ($this->config->shouldSyncOwner()) {
                 $objectMappingDAO->addFieldMapping('owner_id', 'owner_id', ObjectMappingDAO::SYNC_BIDIRECTIONALLY, false);
             }
-
-            $this->manual->addObjectMapping($objectMappingDAO);
         }
+        $this->manual->addObjectMapping($objectMappingDAO);
     }
 
     /**

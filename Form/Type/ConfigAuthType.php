@@ -16,11 +16,13 @@ class ConfigAuthType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $clientSecret   = null;
-        $configProvider = $options['integration'];
+        $clientSecret      = null;
+        $webhookPassword   = null;
+        $configProvider    = $options['integration'];
         if ($configProvider->getIntegrationConfiguration() && $configProvider->getIntegrationConfiguration()->getApiKeys()) {
-            $data         = $configProvider->getIntegrationConfiguration()->getApiKeys();
-            $clientSecret = $data['client_secret'] ?? null;
+            $data            = $configProvider->getIntegrationConfiguration()->getApiKeys();
+            $clientSecret    = $data['client_secret'] ?? null;
+            $webhookPassword = $data['webhook_password'] ?? null;
         }
 
         $builder->add(
@@ -76,6 +78,33 @@ class ConfigAuthType extends AbstractType
                         'message' => 'mautic.core.value.required',
                     ]),
                 ],
+            ]
+        );
+
+        $builder->add(
+            'webhook_username',
+            TextType::class,
+            [
+                'label'      => 'pipedrive.webhook_username',
+                'label_attr' => ['class' => 'control-label'],
+                'required'   => false,
+                'attr'       => [
+                    'class' => 'form-control',
+                ],
+            ]
+        );
+
+        $builder->add(
+            'webhook_password',
+            PasswordType::class,
+            [
+                'label'      => 'pipedrive.webhook_password',
+                'label_attr' => ['class' => 'control-label'],
+                'required'   => false,
+                'attr'       => [
+                    'class' => 'form-control',
+                ],
+                'empty_data'        => $webhookPassword,
             ]
         );
     }

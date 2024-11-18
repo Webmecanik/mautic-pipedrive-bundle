@@ -53,7 +53,10 @@ class OrderExecutioner
 
     public function execute(OrderDAO $orderDAO): void
     {
-        if ($this->config->disablePush()) {
+        // This integration supports two objects, citizen and world3
+        $forceSync = $orderDAO->getOptions()[self::FORCE_SYNC] ?? null;
+
+        if ($this->config->disablePush() && true !== $forceSync) {
             return;
         }
 
@@ -61,8 +64,6 @@ class OrderExecutioner
             $this->order = $orderDAO;
         }
 
-        // This integration supports two objects, citizen and world3
-        $forceSync = $orderDAO->getOptions()[self::FORCE_SYNC] ?? null;
         foreach ([MappingManualFactory::CONTACT_OBJECT, MappingManualFactory::COMPANY_OBJECT] as $objectName) {
             if (!$this->config->isEnabledSync($objectName) && true !== $forceSync) {
                 continue;
@@ -166,8 +167,10 @@ class OrderExecutioner
                     $objectId = $response->getData()['id'] ?? null;
                 } catch (RequestException $exception) {
                     $contents = $exception->getResponse()->getBody()->getContents();
+                    $this->logger->error(json_encode($data));
                     $this->logger->error($contents);
-                    throw $exception;
+                    continue;
+                    // throw $exception;
                 }
             }
 

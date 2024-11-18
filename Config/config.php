@@ -10,12 +10,29 @@ return [
     'routes'      => [
         'main'   => [],
         'public' => [
+            'pipedrive2.webhook' => [
+                'path'       => '/pipedrive2/webhook',
+                'controller' => 'PipedriveBundle:Pipedrive:webhook',
+                'method'     => 'POST',
+            ],
         ],
         'api'    => [],
     ],
     'menu'        => [],
     'services'    => [
         'events'       => [
+            'pipedrive2.integrations.subscriber.lead' => [
+                'class'            => \MauticPlugin\PipedriveBundle\EventListener\LeadIntegrationOverrideSubscriber::class,
+                'decoratedService' => ['mautic.integrations.subscriber.lead'],
+                'arguments'        => [
+                    'mautic.integrations.repository.field_change',
+                    'mautic.integrations.repository.object_mapping',
+                    'mautic.integrations.helper.variable_expresser',
+                    'mautic.integrations.helper.sync_integrations',
+                    'pipedrive2.config',
+                    'pipedrive2.object_mapping.repository',
+                ],
+            ],
             'pipedrive2.lead.subscriber'              => [
                 'class'     => \MauticPlugin\PipedriveBundle\EventListener\LeadSubscriber::class,
                 'arguments' => [
@@ -226,7 +243,17 @@ return [
             ],
         ],
         // These are all mocks to simply enable demonstration of the oauth2 flow
-        'controllers'  => [],
+        'controllers'  => [
+            'pipedrive2.controller.webhook' => [
+                'class'     => \MauticPlugin\PipedriveBundle\Controller\PipedriveController::class,
+                'arguments' => [
+                    'pipedrive2.config',
+                    'mautic.integrations.repository.object_mapping',
+                    'mautic.lead.model.lead',
+                    'mautic.lead.model.company',
+                ],
+            ],
+        ],
         'forms'        => [
             'pipdrive2.config_feature_type' => [
                 'class'     => \MauticPlugin\PipedriveBundle\Form\Type\ConfigFeaturesType::class,

@@ -201,6 +201,20 @@ class Config
         return $this->getFeatureSettings()['integration'][ConfigFeaturesType::ACTIVITY_EVENTS] ?? [];
     }
 
+    public function getWebhookUsername(): ?string
+    {
+        $apiKeys = $this->getApiKeys();
+
+        return $apiKeys['webhook_username'] ?? null;
+    }
+
+    public function getWebhookPassword(): ?string
+    {
+        $apiKeys = $this->getApiKeys();
+
+        return $apiKeys['webhook_password'] ?? null;
+    }
+
     /**
      * @throws IntegrationNotFoundException
      */

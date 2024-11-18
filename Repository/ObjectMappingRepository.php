@@ -36,30 +36,6 @@ class ObjectMappingRepository
         return $qb->execute()->fetchAllAssociative();
     }
 
-    public function getInternalIdsToDelete(string $objectName, array $allIntegrationIds): ?array
-    {
-        $qb = $this->entityManager->getConnection()->createQueryBuilder();
-        $qb->select('sm.internal_object_id, sm.integration_object_id')
-            ->from(MAUTIC_TABLE_PREFIX.'sync_object_mapping', 'sm')
-            ->where(
-                $qb->expr()->andX(
-                    $qb->expr()->eq('sm.integration', ':integration'),
-                    $qb->expr()->eq('sm.integration_object_name', ':integrationObjectName'),
-                )
-            )
-            ->setParameter('integration', Pipedrive2Integration::NAME)
-            ->setParameter('integrationObjectName', $objectName);
-
-        if (!empty($allIntegrationIds)) {
-            $qb->andWhere(
-                $qb->expr()->notIn('sm.integration_object_id', ':integrationObjectIds')
-            )
-                ->setParameter('integrationObjectIds', $allIntegrationIds, Connection::PARAM_INT_ARRAY);
-        }
-
-        return $qb->execute()->fetchAllAssociative();
-    }
-
     public function deleteObjectMappingForObject(array $objectIds, string $objectName): void
     {
         $qb = $this->entityManager->getConnection()->createQueryBuilder();

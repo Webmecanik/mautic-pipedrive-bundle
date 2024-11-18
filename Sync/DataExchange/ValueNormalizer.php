@@ -77,20 +77,26 @@ class ValueNormalizer implements ValueNormalizerInterface
         if (!$value) {
             return null;
         }
-        $values  = explode(',', (string) $value);
+
+        $values  = is_array($value) ? $value : explode(',', (string) $value);
         $options = [];
+
         foreach ($values as $val) {
-            foreach ($field->getOptions() as $option) {
-                if ($option['id'] == $val) {
-                    $options[] = $option['label'];
+            $val = is_array($val) ? ($val['value'] ?? null) : $val;
+            if ($val !== null) {
+                foreach ($field->getOptions() as $option) {
+                    if ($option['id'] == $val) {
+                        $options[] = $option['label'];
+                        break;
+                    }
                 }
             }
         }
 
-        return implode('|', $options);
+        return !empty($options) ? implode('|', $options) : null;
     }
 
-    protected function getOptionsForPipedrive($value, ?Field $field): ?string
+    protected function getOptionsForPipedrive($value, ?Field $field): string|array|null
     {
         if (!$value) {
             return null;
@@ -103,6 +109,10 @@ class ValueNormalizer implements ValueNormalizerInterface
                     $options[] = $option['id'];
                 }
             }
+        }
+
+        if ($field->getKey() === 'label_ids') {
+            return $options;
         }
 
         return implode(',', $options);

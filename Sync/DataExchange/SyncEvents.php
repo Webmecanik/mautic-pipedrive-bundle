@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace MauticPlugin\PipedriveBundle\Sync\DataExchange;
 
 use Doctrine\ORM\EntityManager;
+use Mautic\CoreBundle\Helper\DateTimeHelper;
 use Mautic\IntegrationsBundle\Sync\Logger\DebugLogger;
 use Mautic\LeadBundle\Model\LeadModel;
 use MauticPlugin\PipedriveBundle\Connection\Activities;
@@ -12,6 +13,7 @@ use MauticPlugin\PipedriveBundle\Integration\Config;
 use MauticPlugin\PipedriveBundle\Integration\Pipedrive2Integration;
 use MauticPlugin\PipedriveBundle\Repository\ObjectMappingRepository;
 use Psr\Log\LogLevel;
+use Symfony\Component\Console\Output\ConsoleOutput;
 
 class SyncEvents
 {
@@ -25,6 +27,8 @@ class SyncEvents
 
     private ObjectMappingRepository $objectMappingRepository;
 
+    private ConsoleOutput $output;
+
     public function __construct(ObjectMappingRepository $objectMappingRepository, LeadModel $leadModel, EntityManager $em, Config $config, Activities $activities)
     {
         $this->objectMappingRepository = $objectMappingRepository;
@@ -32,6 +36,7 @@ class SyncEvents
         $this->em                      = $em;
         $this->config                  = $config;
         $this->activities              = $activities;
+        $this->output                  = new ConsoleOutput();
     }
 
     public function sync(?\DateTimeInterface $startDateTime, ?\DateTimeInterface $endDateTime)
@@ -42,6 +47,16 @@ class SyncEvents
             array_column($allContacts, 'integration_object_id')
         );
         $activitiesForContacts = $this->getContactsActivities($startDateTime, $endDateTime, $idsToSyncActivity);
+        if ($startDateTime && $endDateTime) {
+            $this->output->writeln(
+                sprintf(
+                    'Sync activities from %s to %s',
+                    $startDateTime->format(DateTimeHelper::FORMAT_DB),
+                    $endDateTime->format(DateTimeHelper::FORMAT_DB)
+                )
+            );
+        }
+
         DebugLogger::log(
             Pipedrive2Integration::NAME,
             sprintf('Sync activities for %s contacts', count($activitiesForContacts)),
@@ -53,9 +68,15 @@ class SyncEvents
             if (empty($activitiesForContact)) {
                 continue;
             }
+            $message = sprintf(
+                'Sync %s activities for integration ID %s',
+                count($activitiesForContact),
+                $integrationObjectId
+            );
+            $this->output->writeln($message);
             DebugLogger::log(
                 Pipedrive2Integration::NAME,
-                sprintf('Sync %s activities for integration ID %s', count($activitiesForContact), $integrationObjectId),
+                $message,
                 __CLASS__.':'.__FUNCTION__,
                 [],
                 LogLevel::INFO

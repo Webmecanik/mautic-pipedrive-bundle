@@ -8,7 +8,6 @@ use Mautic\IntegrationsBundle\IntegrationEvents;
 use Mautic\LeadBundle\Model\LeadModel;
 use MauticPlugin\PipedriveBundle\Connection\Client;
 use MauticPlugin\PipedriveBundle\Integration\Config;
-use MauticPlugin\PipedriveBundle\Integration\Pipedrive2Integration;
 use MauticPlugin\PipedriveBundle\Repository\ObjectMappingRepository;
 use MauticPlugin\PipedriveBundle\Sync\Mapping\Manual\MappingManualFactory;
 use Symfony\Component\Console\Output\ConsoleOutput;
@@ -70,59 +69,6 @@ class DeleteObjectSubscriber implements EventSubscriberInterface
                     $consoleOutput->writeln($this->translator->trans('pipedrive.pipedrive.deleted', ['%count%' => count($deletedOnIntegrationIds), '%object%' => $objectName]));
                 }
             }
-
-            $deleteOnInternalIds = $this->objectMappingRepository->getInternalIdsToDelete($objectName,
-                $this->getDeletedIntegrationIds($objectName)
-            );
-            if (!empty($deleteOnInternalIds)) {
-                $this->leadModel->deleteEntities(array_column($deleteOnInternalIds, 'internal_object_id'));
-                $this->objectMappingRepository->deleteObjectMappingForObject(array_column($deleteOnInternalIds, 'internal_object_id'), $objectName);
-                if (defined('IN_MAUTIC_CONSOLE')) {
-                    $consoleOutput = new ConsoleOutput();
-                    $consoleOutput->writeln($this->translator->trans('pipedrive.deleted', ['%count%' => count($deleteOnInternalIds)]));
-                }
-            }
         }
-    }
-
-    /**
-     * @param $objectName
-     *
-     * @throws \GuzzleHttp\Exception\GuzzleException
-     * @throws \MauticPlugin\PipedriveBundle\Exception\PipedriveBundleMappingException
-     * @throws \Mautic\IntegrationsBundle\Exception\IntegrationNotFoundException
-     * @throws \Mautic\IntegrationsBundle\Exception\InvalidCredentialsException
-     * @throws \Mautic\IntegrationsBundle\Exception\PluginNotConfiguredException
-     */
-    protected function getDeletedIntegrationIds($objectName): ?array
-    {
-        $nextStart      = 0;
-        $integrationIds = [];
-        while (true) {
-            $page     = $nextStart ? ($nextStart / 500) + 1 : 1;
-            $response = $this->client->getForPage($objectName, 500, $page);
-
-            if ($response->hasError()) {
-                $this->logger->error(
-                    sprintf(
-                        '%s: Error fetching %s data: %s',
-                        Pipedrive2Integration::DISPLAY_NAME,
-                        $objectName,
-                        $response->getError()
-                    )
-                );
-
-                return null;
-            }
-
-            foreach ($response->getData() as $datum) {
-                $integrationIds[$datum['id']] = $datum['id'];
-            }
-            if (!$nextStart = $response->getNextStart()) {
-                break;
-            }
-        }
-
-        return $integrationIds;
     }
 }
