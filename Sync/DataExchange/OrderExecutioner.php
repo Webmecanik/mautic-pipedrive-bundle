@@ -134,11 +134,18 @@ class OrderExecutioner
 
             if (!empty($found['items'])) {
                 $objectId = $found['items'][0]['item']['id'] ?? null;
-                $response = new Response($this->client->update(
-                    $objectName,
-                    $data,
-                    $objectId
-                ));
+                try {
+                    $response = new Response($this->client->update(
+                        $objectName,
+                        $data,
+                        $objectId
+                    ));
+                } catch (RequestException $exception) {
+                    $contents = $exception->getResponse()->getBody()->getContents();
+                    $this->logger->error(json_encode($data));
+                    $this->logger->error($contents);
+                    continue;
+                }
             } else {
                 try {
                     // create contact
